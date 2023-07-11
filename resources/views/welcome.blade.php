@@ -17,13 +17,18 @@
 </head>
 
 <body class="d-flex h-100 text-center text-white bg-dark">
-    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <div class="p-3 mx-auto">
         <main class="px-3">
-            <h1>Add Area</h1>
-            <p class="lead">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
-                been the industry's standard dummy text ever since the 1500s.</p>
-            <p class="lead">
             <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="cover-container">
+                            <h1>Add Area</h1>
+                            <p class="lead">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
+                                been the industry's standard dummy text ever since the 1500s.</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-12">
                         <form>
@@ -60,63 +65,43 @@
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                     </div>
-                    <div class="col-12">
-                        <div id="map"></div>
+                    <div class="col-12 py-5">
+                        <div id="map" style="width: 100%; height: 400px;"></div>
                     </div>
                 </div>
             </div>
-            </p>
         </main>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.min.js"
         integrity="sha512-3dZ9wIrMMij8rOH7X3kLfXAzwtcHpuYpEgQg1OA4QAob1e81H8ntUQmQm3pBudqIoySO5j0tHN4ENzA6+n2r4w=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        let map;
-
-        async function initMap() {
-            const {
-                Map
-            } = await google.maps.importLibrary("maps");
-
-            map = new Map(document.getElementById("map"), {
-                center: {
-                    lat: -34.397,
-                    lng: 150.644
-                },
-                zoom: 8,
-            });
-        }
-
-        setTimeout(() => {
-            initMap();
-        }, 500);
-    </script>
-    <script async
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1-7rCun_Jhh-ODzJSdqzqOoz18dU9DbI&callback=initMap"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
         integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+
     <script>
-        var leafletMap = L.map('map', {
-            center: [51.505, -0.09],
+        var map = L.map('map', {
+            center: [32.162369, 74.183083],
             zoom: 13,
+            drawControl: true,
         });
-        var latlngs = [
-            [37, -109.05],
-            [41, -109.03],
-            [41, -102.05],
-            [37, -102.04]
-        ];
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-        var polygon = L.polygon(latlngs, {
-            color: 'red'
-        }).addTo(leafletMap);
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
+        map.addControl(drawControl);
 
-        // zoom the map to the polygon
-        leafletMap.fitBounds(polygon.getBounds());
     </script>
 </body>
 
