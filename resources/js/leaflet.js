@@ -16,7 +16,7 @@ if(document.getElementById('map')){
 
 function initMap(polygon){
     map = L.map('map', {
-        center: [32.162369, 74.183083],
+        center: [44.4268, 26.1025],
         zoom: 13,
     });
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -57,14 +57,14 @@ function initMap(polygon){
     map.on("draw:created", function (event) {
         let layer = event.layer;
         console.log("layer: ", layer)
-        Livewire.emit('polygonAdded', layer.toGeoJSON().geometry.coordinates);
+        Livewire.emit('polygonAdded', layer.toGeoJSON());
         drawnItems.addLayer(layer);
     });
 
     map.on('draw:edited', function (event) {
         let layers = event.layers;
         layers.eachLayer(function (layer){
-            Livewire.emit('polygonUpdated', layer.toGeoJSON().geometry.coordinates);
+            Livewire.emit('polygonUpdated', layer.toGeoJSON());
         });
     });
 }

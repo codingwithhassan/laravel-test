@@ -24,7 +24,7 @@
             <div class="mb-3">
                 <label for="category" class="form-label">Select Category</label>
                 <select class="form-select @error('categoryId') is-invalid @enderror" id="category" wire:model="categoryId">
-                    <option selected>Open this select menu</option>
+                    <option selected>Select Category</option>
                     @foreach($categories as $id => $category)
                         <option value="{{ $id }}">{{ $category }}</option>
                     @endforeach
@@ -50,13 +50,21 @@
             <div class="mb-3">
                 <label for="owner" class="form-label">Owner</label>
                 <select class="form-select @error('ownerId') is-invalid @enderror" id="owner" wire:model="ownerId">
-                    <option selected>Open this select menu</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
+                    <option selected>Select Owner</option>
+                    @foreach($owners as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
                 </select>
                 @error('ownerId')
                 <span class="invalid-feedback">{{ $message }} </span>
+                @enderror
+            </div>
+            <div class="mb-3">
+                <label for="file" class="form-label">End Date</label>
+                <input type="file" onchange="handleFileSelect(event)" class="form-control @error('file') is-invalid @enderror" id="file" wire:model="file">
+                <span class="valie-feedback">GeoJson file with polygon</span>
+                @error('file')
+                <span class="invalid-feedback"> {{ $message }} </span>
                 @enderror
             </div>
         </form>
@@ -67,6 +75,18 @@
 </div>
 @vite('resources/js/leaflet.js')
 <script>
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                Livewire.emit('fileChosen', content);
+            };
+            reader.readAsText(file);
+        }
+    }
     function save(){
         console.log("window.drawnItems.toGeoJSON(): ",window.drawnItems.toGeoJSON())
         @this.save();

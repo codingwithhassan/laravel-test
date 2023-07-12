@@ -18,6 +18,7 @@ class Area extends Model
         'coordinates',
         'category_id',
         'owner_id',
+        'path',
     ];
 
     protected $casts = [
