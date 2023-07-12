@@ -62,7 +62,13 @@
         </form>
     </div>
     <div class="col-12">
-        <button type="button" wire:click="save" class="btn btn-primary">Submit</button>
+        <button type="button" onclick="save()" class="btn btn-primary">Submit</button>
     </div>
 </div>
 @vite('resources/js/leaflet.js')
+<script>
+    function save(){
+        console.log("window.drawnItems.toGeoJSON(): ",window.drawnItems.toGeoJSON())
+        @this.save();
+    }
+</script>

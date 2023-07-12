@@ -35,12 +35,12 @@ class AddAreaForm extends Component
         'polygonUpdated' => 'updatePolygon',
     ];
 
-    function addPolygon($polygon){
-        $this->coordinates = $polygon;
+    function addPolygon($polygonLines){
+        $this->coordinates = $polygonLines;
     }
 
-    function updatePolygon($polygon){
-        $this->coordinates = $polygon;
+    function updatePolygon($polygonLines){
+        $this->coordinates = $polygonLines;
     }
 
     public function dehydrate(){
@@ -61,7 +61,7 @@ class AddAreaForm extends Component
 
         $lines = [];
 
-        foreach ($this->coordinates['geometry']['coordinates'] as $index => $line){
+        foreach ($this->coordinates as $index => $line){
             $coordinates = [];
             foreach ($line as $coordinate){
                 $coordinates[] = new Point($coordinate[0], $coordinate[1]);
@@ -78,9 +78,9 @@ class AddAreaForm extends Component
             'owner_id' => $this->ownerId,
         ]);
 
-        $this->clearFields();
-
         session()->flash('message', $this->name. ' area created successfully.');
+
+        $this->clearFields();
     }
     public function render()
     {
