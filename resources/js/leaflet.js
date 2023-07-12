@@ -50,6 +50,7 @@ function initMap(polygon){
             console.log(polygonCoordinates)
             let drawPolygon = L.polygon(polygonCoordinates);
 
+            map.fitBounds(drawPolygon.getBounds());
             drawnItems.addLayer(drawPolygon);
         }
     }

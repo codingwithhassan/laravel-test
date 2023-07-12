@@ -25,7 +25,8 @@ class AddAreaForm extends Component
     public $coordinates;
     public $file;
 
-    function mount(){
+    function mount()
+    {
         $date = now()->toDateString();
         $this->startDate = $date;
         $this->endDate = $date;
@@ -38,7 +39,7 @@ class AddAreaForm extends Component
         'endDate' => 'required',
         'ownerId' => 'required',
         'coordinates' => 'required',
-        'file' => 'required|file|mimes:json,geojson',
+        'file' => 'nullable|file|mimes:json,geojson',
     ];
 
     protected $listeners = [
@@ -57,15 +58,16 @@ class AddAreaForm extends Component
         $this->coordinates = $polygon['geometry']['coordinates'];
     }
 
-    function uploadFileAndDrawPolygon($geoJson){
+    function uploadFileAndDrawPolygon($geoJson)
+    {
         $geoJson = json_decode($geoJson, true);
-        foreach ($geoJson['features'] as $feature){
-            if($feature['geometry']['type'] == 'Polygon'){
-                if($this->coordinates){
-                    foreach ($feature['geometry']['coordinates'] as $line){
+        foreach ($geoJson['features'] as $feature) {
+            if ($feature['geometry']['type'] == 'Polygon') {
+                if ($this->coordinates) {
+                    foreach ($feature['geometry']['coordinates'] as $line) {
                         $this->coordinates[] = $line;
                     }
-                }else{
+                } else {
                     $this->coordinates = $feature['geometry']['coordinates'];
                 }
             }
@@ -88,22 +90,26 @@ class AddAreaForm extends Component
         $this->file = null;
     }
 
-    public function save(){
+    public function save()
+    {
         $this->validate();
 
         $lines = [];
 
-        foreach ($this->coordinates as $index => $line){
+        foreach ($this->coordinates as $index => $line) {
             $coordinates = [];
-            foreach ($line as $coordinate){
+            foreach ($line as $coordinate) {
                 $coordinates[] = new Point($coordinate[0], $coordinate[1]);
             }
             $lines[$index] = new LineString($coordinates);
         }
 
-        $path = $this->file->storeAs('geojson', Str::random().".".$this->file->getClientOriginalExtension());
+        $path = null;
+        if ($this->file) {
+            $path = $this->file->storeAs('geojson', Str::random() . "." . $this->file->getClientOriginalExtension());
 
-//        $content = file_get_contents(storage_path('app/' . $path));
+//            $content = file_get_contents(storage_path('app/' . $path));
+        }
 
         Area::create([
             'name' => $this->name,
@@ -115,10 +121,11 @@ class AddAreaForm extends Component
             'path' => $path,
         ]);
 
-        session()->flash('message', $this->name. ' area created successfully.');
+        session()->flash('message', $this->name . ' area created successfully.');
 
         $this->clearFields();
     }
+
     public function render(): View
     {
         return view('livewire.add-area-form');
