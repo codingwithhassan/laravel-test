@@ -47,7 +47,7 @@ function initMap(polygon){
                 let cord = [polygon[i][j][1], polygon[i][j][0]];
                 polygonCoordinates.push(cord);
             }
-            console.log(polygonCoordinates)
+            console.log("polygonCoordinates: ", polygonCoordinates)
             let drawPolygon = L.polygon(polygonCoordinates);
 
             map.fitBounds(drawPolygon.getBounds());
@@ -57,15 +57,19 @@ function initMap(polygon){
 
     map.on("draw:created", function (event) {
         let layer = event.layer;
-        console.log("layer: ", layer)
+        console.log("created layer: ", layer)
         Livewire.emit('polygonAdded', layer.toGeoJSON());
         drawnItems.addLayer(layer);
     });
 
     map.on('draw:edited', function (event) {
         let layers = event.layers;
-        layers.eachLayer(function (layer){
-            Livewire.emit('polygonUpdated', layer.toGeoJSON());
-        });
+        let items = [];
+        drawnItems.eachLayer(function (layer){
+            items.push(layer.toGeoJSON()['geometry']['coordinates'][0]);
+        })
+
+        console.log("updated items: ", items)
+        Livewire.emit('polygonUpdated', items);
     });
 }

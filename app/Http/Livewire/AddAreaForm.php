@@ -7,9 +7,10 @@ use Livewire\Component;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
-use MatanYadaev\EloquentSpatial\Objects\Polygon;
-use MatanYadaev\EloquentSpatial\Objects\LineString;
-use MatanYadaev\EloquentSpatial\Objects\Point;
+use Clickbar\Magellan\Data\Geometries\Point;
+use Clickbar\Magellan\Data\Geometries\LineString;
+use Clickbar\Magellan\Data\Geometries\Polygon;
+use Clickbar\Magellan\Data\Geometries\MultiPolygon;
 
 class AddAreaForm extends Component
 {
@@ -50,12 +51,18 @@ class AddAreaForm extends Component
 
     function addPolygon($polygonGeoJson): void
     {
-        $this->coordinates = $polygonGeoJson['geometry']['coordinates'];
+        if ($this->coordinates) {
+            foreach ($polygonGeoJson['geometry']['coordinates'] as $line) {
+                $this->coordinates[] = $line;
+            }
+        } else {
+            $this->coordinates = $polygonGeoJson['geometry']['coordinates'];
+        }
     }
 
-    function updatePolygon($polygon): void
+    function updatePolygon($polygonLines): void
     {
-        $this->coordinates = $polygon['geometry']['coordinates'];
+        $this->coordinates = $polygonLines;
     }
 
     function uploadFileAndDrawPolygon($geoJson)
@@ -94,14 +101,13 @@ class AddAreaForm extends Component
     {
         $this->validate();
 
-        $lines = [];
-
-        foreach ($this->coordinates as $index => $line) {
-            $coordinates = [];
-            foreach ($line as $coordinate) {
-                $coordinates[] = new Point($coordinate[0], $coordinate[1]);
+        $polygons = [];
+        foreach ($this->coordinates as $lineIndex => $line) {
+            $points = [];
+            foreach ($line as $point) {
+                $points[] = Point::make($point[0], $point[1]);
             }
-            $lines[$index] = new LineString($coordinates);
+            $polygons[] = Polygon::make([LineString::make($points)]);
         }
 
         $path = null;
@@ -115,7 +121,7 @@ class AddAreaForm extends Component
             'name' => $this->name,
             'start_date' => $this->startDate,
             'end_date' => $this->endDate,
-            'coordinates' => new Polygon($lines),
+            'coordinates' => MultiPolygon::make($polygons),
             'category_id' => $this->categoryId,
             'owner_id' => $this->ownerId,
             'path' => $path,

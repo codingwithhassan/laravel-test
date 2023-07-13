@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use Clickbar\Magellan\Database\Eloquent\HasPostgisColumns;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use MatanYadaev\EloquentSpatial\Objects\Polygon;
 
 class Area extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPostgisColumns;
 
     protected $fillable = [
         'name',
@@ -24,7 +24,13 @@ class Area extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'coordinates' => Polygon::class,
+    ];
+
+    protected array $postgisColumns = [
+        'coordinates' => [
+            'type' => 'geography',
+            'srid' => 4326,
+        ],
     ];
 
     public function category(): BelongsTo

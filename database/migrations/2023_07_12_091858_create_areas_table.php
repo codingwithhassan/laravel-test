@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-//        \Illuminate\Support\Facades\DB::statement("CREATE EXTENSION IF NOT EXISTS postgis;");
+        \Illuminate\Support\Facades\DB::statement("CREATE EXTENSION IF NOT EXISTS postgis;");
         Schema::create('areas', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->date('start_date');
             $table->date('end_date');
-            $table->polygon('coordinates');
+            $table->multiPolygon('coordinates');
             $table->foreignId('category_id')->constrained()->onDelete("cascade");
             $table->foreignId('owner_id')->constrained()->onDelete("cascade");;
             $table->timestamps();
